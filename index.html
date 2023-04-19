@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Mark</title>
+    <style>
+        /* HIDE RADIO */
+        [type=radio] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        /* IMAGE STYLES */
+        [type=radio]+img {
+            cursor: pointer;
+        }
+
+        /* CHECKED STYLES */
+        [type=radio]:checked+img {
+            outline: 2px solid #f00;
+        }
+
+        *{
+            box-sizing: border-box;
+        }
+
+        body{
+            position: relative;
+            height: 100vh;
+        }
+        .content-wrapper{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%)
+        }
+
+        .image-option{
+            width: 200px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .image-div{
+            width: 500px;
+            height: 250px;
+            border: 1px solid gray;
+        }
+        .image-div img{
+            width: 100%;
+            height: 250px;
+        }
+
+        .form-wrapper{
+            padding: 20px;
+            margin: 50px 0;
+            background: #eee;
+            width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="content-wrapper">
+    
+        <label>
+            <input type="radio" name="test" value="javascript">
+            <img src="javascript.png" class="javascript image-option" alt="Option 1">
+        </label>
+
+        <label>
+            <input type="radio" name="test" value="reactjs">
+            <img src="reactjs.jpeg" class="reactjs image-option" alt="Option 2">
+        </label>
+
+        <div class="form-wrapper">
+            <form id="watermark-form">
+                <label for="live-more">Live more</label>
+                <input type="text" id="live-more">
+                <br>
+                <br>
+                <br>
+                <label for="bank-less">Bank Less</label>
+                <input type="text" id="bank-less">
+                <br>
+                <br>
+                <br>
+                <button type="submit">Generate Image</button>
+            </form>
+        </div>
+
+
+        <div id="image" class="image-div"></div>
+
+        <br>
+        <br>
+        <br>
+
+        <a href=`#` class="download" download="">Download</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/watermarkjs@2.1.1/dist/watermark.min.js"></script> -->
+
+    <script src="watermark.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+
+            $liveMore = '';
+            $bankLess = '';
+            $resultImage = '';
+            $imgeURL = '';
+
+            $(document).on('change','input[type="radio"]' ,function(){
+                
+                $('.image-div').html('')
+
+                $myImage = $(this).siblings()
+                $cloneImage = $myImage.clone()
+                $resultImage = $cloneImage;
+                // console.log($cloneImage[0])
+                // $('#image').html($cloneImage[0])
+                $imageURL = $myImage.attr('src')
+            })
+
+            $(document).on('change','#live-more' ,function(){
+                $('.image-div').html('')
+                $liveMore = $('#live-more').val().substring(0, 15)
+            })
+
+            $(document).on('change','#bank-less' ,function(){
+                $('.image-div').html('')
+                $bankLess = $('#bank-less').val().substring(0, 15)
+            })
+
+            $(document).on('submit','#watermark-form', function(e){
+                e.preventDefault();
+                $('.image-div').html('')
+
+                if($resultImage && $liveMore && $bankLess){
+
+                    var x1 = function(target) {
+                        return 900;
+                    };
+                    var y1 = function() {
+                        return 400;
+                    };
+
+                    var x2 = function() {
+                        return 900;
+                    };
+                    var y2 = function() {
+                        return 500;
+                    };
+
+                    watermark([$imageURL])
+                    .image(watermark.text.atPos(x1, y1, $liveMore, '48px sans-serif', '#fff', 1, 400))
+                    .render()
+                    .image(watermark.text.atPos(x2, y2, $bankLess, '48px sans-serif', '#fff', 1, 500))
+                    .then(function(img){
+                        document.getElementById('image').appendChild(img)
+
+                        let watermarkImg = img.getAttribute('src')
+                        $('.download').attr('href', watermarkImg)
+
+                        $('.download').attr('download', $imageURL)
+                    })
+
+                }else{
+                    alert('plz choose image and fill fields.....')
+                }
+        
+
+            } )
+
+        })
+    </script>
+</body>
+
+
+
+</html>
